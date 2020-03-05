@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>610</x>
+      <y>10</y>
+      <w>210</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>OwnedCard
+--
+id integer(255)
+multiverseid integer(10)
+quantity integer(255)
+OwnerID integer(255)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>360</x>
+      <y>60</y>
+      <w>210</w>
+      <h>90</h>
+    </coordinates>
+    <panel_attributes>User
+--
+id integer(255)
+username varchar(20)
+email varchar(50)
+password varchar(20)
+loggedin boolean</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>450</x>
+      <y>80</y>
+      <w>180</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>160.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>20</x>
+      <y>10</y>
+      <w>300</w>
+      <h>270</h>
+    </coordinates>
+    <panel_attributes>Card
+--
+multiverseid (I hope this is unique) integer(10)
+name varchar(200)
+manaCost varchar(20)
+cmc integer(20)
+colorIdentity varchar(20)
+type varchar(100)
+text text
+flavor text
+power (if creature) integer(5)
+toughness (if creature) integer(5)
+loyalty (if walker) integer(5)
+artist varchar(20)
+rarity varchar(20)
+set varchar(5)
+imageURL varchar(100)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>300</x>
+      <y>30</y>
+      <w>330</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>310.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+</diagram>
