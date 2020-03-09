@@ -1,0 +1,53 @@
+/* Page-wide Styles */
+
+@font-face {
+    font-family: aFont;
+    src: url(DroidSans.ttf);
+}
+
+body {
+    font-size: 20px;
+    font-family: aFont;
+}
+
+h4 {
+    font-weight: bold;
+}
+
+
+/* Heading */
+
+
+/* Form Bar */
+
+#formbar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+#formbar>div {
+    padding: 10px;
+}
+
+
+/* Signup Div */
+
+
+/* Add Card Div */
+
+
+/* Login Div*/
+
+
+/* Search Bar */
+
+#searchbar {
+    border: 5px solid black;
+}
+
+
+/* Result Div */
+
+#resultdiv {
+    border: 5px solid black;
+}
