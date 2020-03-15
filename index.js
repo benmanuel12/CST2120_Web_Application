@@ -1,3 +1,5 @@
+const mtg = require('mtgsdk')
+const express = require('express');
 //Import the mysql module
 const mysql = require('mysql');
 
@@ -11,8 +13,10 @@ const connectionPool = mysql.createPool({
     debug: false
 });
 
-/* Outputs all of the employees */
-function getOwnedCards() {
+
+const app = express();
+
+function GETupdate(request, response) {
     //Build query
     let sql = "SELECT multiverseID FROM ownedcards";
 
@@ -21,10 +25,14 @@ function getOwnedCards() {
         if (err) { //Check for errors
             console.error("Error executing query: " + JSON.stringify(err));
         } else { //Output results in JSON format - a web service would return this string.
-            console.log(result);
+            response.send(JSON.stringify(result));
         }
     });
+
 }
 
-//Call function to output employees
-getOwnedCards();
+app.get("/update", GETupdate);
+
+app.use(express.static('public'))
+
+app.listen(8080);

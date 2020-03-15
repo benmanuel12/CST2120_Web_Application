@@ -1,7 +1,21 @@
 function signupfunction() {
+    let request = new XMLHttpRequest();
+    request.onload = () => {
+        if (request.status === 200) {
+            let responseData = request.responseText;
+            document.getElementById("fakeid").innerHTML = responseData;
+        } else {
+            alert("Error: " + request.status);
+        }
+    }
+    request.open("POST", "signupSQL.js");
+    request, setRequestHeader("Content-type", "applicatio/x-www-form-urlencoded");
+
     let email = document.getElementById("email").value;
     let username = document.getElementById("signupusername").value;
     let password = document.getElementById("signuppassword").value;
+
+    request.send("email" + email + "username=" + username + "password=" + password);
 }
 
 /*

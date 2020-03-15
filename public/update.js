@@ -4,15 +4,13 @@ function update() {
     request.onload = function() {
         if (request.status === 200) {
             let responseData = request.responseText;
-            console.log(responseData);
-            dataAsObject = JSON.parse(responseData);
-            console.log(dataAsObject);
+            console.log(JSON.parse(responseData));
         } else
             alert("error: " + request.status);
 
     };
 
-    request.open("GET", "SQLpullCardsFromDB.js");
+    request.open("GET", "/update");
     request.send();
 }
 /*
