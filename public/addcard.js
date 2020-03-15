@@ -1,20 +1,8 @@
-const mtg = require('mtgsdk')
-const express = require('express');
-
-const app = express();
-
-app.use(express.static('public'))
-
-function handleGetRequest(request, response) {
-    response.send("hi");
+function addcardfunction() {
+    let cardname = document.getElementById("cardname").value;
+    let quantity = document.getElementById("quantity").value;
 }
-
-app.get('/hi', handleGetRequest);
-
-app.listen(8080);
 /*
-General Program Flow
-
 User writes input into form
 Extract contents of form and convert to JSON
 Send to server code

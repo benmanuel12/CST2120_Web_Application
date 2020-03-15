@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
+    <script type="text/javascript" src='update.js'>
+    </script>
     <title>Index</title>
 </head>
 
@@ -61,6 +63,7 @@
             </form>
         </div>
     </div>
+    <!--
     <div id="searchbar">
         <form>
             <div class="form-group">
@@ -68,6 +71,12 @@
                 <input type="text" class="form-control" id="searchinput" placeholder="Ancestral Recall" name="searchinput">
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+-->
+    <div id="updatediv">
+        <form>
+            <button type="button" class="btn btn-primary" onclick="update()">Update</button>
         </form>
     </div>
     <div id="resultdiv" class="table-responsive">
@@ -85,14 +94,13 @@
             <tbody>
                 <tr>
                     <th scope="row" id="theid">1</th>
-                    <td></td>
+                    <td id="here"></td>
                     <td></td>
                     <td></td>
                 </tr>
             </tbody>
         </table>
     </div>
-
 </body>
 
 </html>
