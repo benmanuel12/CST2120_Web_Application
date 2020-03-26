@@ -120,7 +120,7 @@ async function checkAvailable(username) {
 
 async function insertUser(username, email, password) {
     //Build query
-    let sql = "INSERT INTO users VALUES ('" + username + "', '" + email + "', '" + password + "', 'No');";
+    let sql = "INSERT INTO users (username, email, password, active) VALUES ('" + username + "', '" + email + "', '" + password + "', 'No');";
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
             if (err) {
@@ -133,18 +133,14 @@ async function insertUser(username, email, password) {
 }
 
 function POSTsignup(request, response) {
-    let givenUsername = request.param.username;
-    let givenEmail = request.param.email;
-    let givenPassword = request.param.password;
-    console.log(givenUsername);
-    console.log(givenEmail);
-    console.log(givenPassword);
+    let givenUsername = request.body.username;
+    let givenEmail = request.body.email;
+    let givenPassword = request.body.password;
 
     checkAvailable(givenUsername).then(result => {
         if (result.length == 0) {
             // username is availible
             insertUser(givenUsername, givenEmail, givenPassword).then(result => {
-                alert("Account created");
                 response.send("Account created");
 
             }).catch(err => {
@@ -152,8 +148,7 @@ function POSTsignup(request, response) {
             })
         } else {
             // username is in use
-            alert("Username is taken");
-            response.send("Account created");
+            response.send("This username is in use");
         }
 
     }).catch(err => {

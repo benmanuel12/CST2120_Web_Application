@@ -1,9 +1,9 @@
-function signupfunction() {
+function signup() {
     let request = new XMLHttpRequest();
     request.onload = function() {
         if (request.status === 200) {
             let responseData = request.responseText;
-            alert("Success" + responseData);
+            alert(responseData);
         } else {
             alert("Error: " + request.status);
         }
