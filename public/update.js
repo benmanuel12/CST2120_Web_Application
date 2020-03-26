@@ -5,46 +5,48 @@ function update() {
         if (request.status === 200) {
             let responseData = request.responseText;
             let objectArray = JSON.parse(responseData);
-            let largerHTMLString = "";
+            let finalHTMLString = "";
             for (let i = 0; i < objectArray.length; i++) {
 
-                let name = i.name;
-                let manaCost = i.manaCost;
-                let cmc = i.cmc;
-                let colors = i.colors;
-                let colorIdentity = i.colorIdentity;
-                let type = i.type;
-                let supertypes = i.supertypes;
-                let types = i.types;
-                let subtypes = i.subtypes;
-                let rarity = i.rarity;
-                let set = i.set;
-                let setname = i.setname;
-                let text = i.text;
-                let flavor = i.flavor;
-                let artist = i.artist;
-                let number = i.number;
-                let power = i.power;
-                let toughness = i.toughness;
-                let loyalty = i.loyalty;
-                let layout = i.layout;
-                let multiverseID = i.multiverseID;
-                let imageUrl = i.imageUrl;
-                let printings = i.printings;
-                let legalities = i.legalities;
-                let id = i.id;
+                let name = objectArray[i].name;
+                let manaCost = objectArray[i].manaCost;
+                let cmc = objectArray[i].cmc;
+                let colors = objectArray[i].colors;
+                let colorIdentity = objectArray[i].colorIdentity;
+                let type = objectArray[i].type;
+                let supertypes = objectArray[i].supertypes;
+                let types = objectArray[i].types;
+                let subtypes = objectArray[i].subtypes;
+                let rarity = objectArray[i].rarity;
+                let set = objectArray[i].set;
+                let setname = objectArray[i].setname;
+                let text = objectArray[i].text;
+                let flavor = objectArray[i].flavor;
+                let artist = objectArray[i].artist;
+                let number = objectArray[i].number;
+                let power = objectArray[i].power;
+                let toughness = objectArray[i].toughness;
+                let loyalty = objectArray[i].loyalty;
+                let layout = objectArray[i].layout;
+                let multiverseID = objectArray[i].multiverseID;
+                let imageUrl = objectArray[i].imageUrl;
+                let printings = objectArray[i].printings;
+                let legalities = objectArray[i].legalities;
+                let id = objectArray[i].id;
 
-                let dataArray = { name, manaCost, cmc, colors, colorIdentity, type, supertypes, types, subtypes, rarity, set, setname, text, flavor, artist, number, power, toughness, loyalty, layout, multiverseID, imageUrl, printings, legalities, id };
+                let dataArray = [name, manaCost, cmc, colors, colorIdentity, type, supertypes, types, subtypes, rarity, set, setname, text, flavor, artist, number, power, toughness, loyalty, layout, multiverseID, imageUrl, printings, legalities, id];
 
                 let htmlString = "<tr>";
+                console.log(dataArray.length);
                 for (let j = 0; j < dataArray.length; j++) {
-                    let newString = "<td>" + dataArray[j] + "</td>";
-                    htmlString += newString;
+                    htmlString += "<td>" + dataArray[j] + "</td>";
+                    console.log("got here");
                 }
                 htmlString += "</tr>";
-                largerHTMLString += htmlString;
+                finalHTMLString += htmlString;
             }
-            document.getElementById("rowstart").innerHTML = largerHTMLString;
+            console.log("Final HTML: " + finalHTMLString);
+            document.getElementById("rowstart").innerHTML = finalHTMLString;
 
         } else
             alert("error: " + request.status);
@@ -62,4 +64,4 @@ for each row in the results from SELECT multiverseID from ownedcards WHERE usern
 SELECT * FROM cards where multiverseID = any value in array
 For each item in results, convert to JS object and insert into table
 
-also need to get quantity from owned card table somehow
+also need to get quantity from owned card table somehow */

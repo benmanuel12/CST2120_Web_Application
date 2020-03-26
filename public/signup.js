@@ -1,21 +1,21 @@
 function signupfunction() {
     let request = new XMLHttpRequest();
-    request.onload = () => {
+    request.onload = function() {
         if (request.status === 200) {
             let responseData = request.responseText;
-            document.getElementById("fakeid").innerHTML = responseData;
+            alert("Success" + responseData);
         } else {
             alert("Error: " + request.status);
         }
     }
-    request.open("POST", "signupSQL.js");
-    request, setRequestHeader("Content-type", "applicatio/x-www-form-urlencoded");
+    request.open("POST", "/signup");
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
     let email = document.getElementById("email").value;
     let username = document.getElementById("signupusername").value;
     let password = document.getElementById("signuppassword").value;
 
-    request.send("email" + email + "username=" + username + "password=" + password);
+    request.send("username=" + username + "&email=" + email + "&password=" + password);
 }
 
 /*
