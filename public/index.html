@@ -9,6 +9,10 @@
     </script>
     <script type="text/javascript" src='signup.js'>
     </script>
+    <script type="text/javascript" src='login.js'>
+    </script>
+    <script type="text/javascript" src='addcard.js'>
+    </script>
     <title>Index</title>
 </head>
 
@@ -46,7 +50,7 @@
                     <label for="quantity">Quantity</label>
                     <input type="number" class="form-control" id="quantity" placeholder="1" name="quantity">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-primary" onclick=addcardfunction()>Submit</button>
             </form>
         </div>
         <div class=v-divider></div>
@@ -61,7 +65,7 @@
                     <label for="password">Password</label>
                     <input type="password" class="form-control" id="password" placeholder="12345" name="password">
                 </div>
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-primary" onclick=loginfunction()>Submit</button>
             </form>
         </div>
     </div>
@@ -81,43 +85,47 @@
             <button type="button" class="btn btn-primary" onclick="update()">Update</button>
         </form>
     </div>
-    <div id="resultdiv" class="table-responsive">
+    <div id="resultdiv">
         <h4>Results</h4>
         <small>just a prototype table for tests</small>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Mana Cost</th>
-                    <th scope="col">CMC</th>
-                    <th scope="col">Colors</th>
-                    <th scope="col">Color Identity</th>
-                    <th scope="col">Type Line</th>
-                    <th scope="col">Supertypes</th>
-                    <th scope="col">Types</th>
-                    <th scope="col">Subtypes</th>
-                    <th scope="col">Rarity</th>
-                    <th scope="col">Set Code</th>
-                    <th scope="col">Set Name</th>
-                    <th scope="col">Text</th>
-                    <th scope="col">Flavor</th>
-                    <th scope="col">Artist</th>
-                    <th scope="col">Number</th>
-                    <th scope="col">Power</th>
-                    <th scope="col">Toughness</th>
-                    <th scope="col">Loyalty</th>
-                    <th scope="col">Layout</th>
-                    <th scope="col">Multiverse ID</th>
-                    <th scope="col">Image</th>
-                    <th scope="col">Printings</th>
-                    <th scope="col">Legalities</th>
-                    <th scope="col">ID</th>
-                </tr>
-            </thead>
-            <tbody id="rowstart">
+        <div id="tablediv" class="table-responsive">
+            <table class="table table-fit">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Mana Cost</th>
+                        <th scope="col">CMC</th>
+                        <th scope="col">Colors</th>
+                        <th scope="col">Color Identity</th>
+                        <th scope="col">Type Line</th>
+                        <th scope="col">Supertypes</th>
+                        <th scope="col">Types</th>
+                        <th scope="col">Subtypes</th>
+                        <th scope="col">Rarity</th>
+                        <th scope="col">Set Code</th>
+                        <th scope="col">Set Name</th>
+                        <th scope="col" class="col-md-8">Text</th>
+                        <th scope="col">Flavor</th>
+                        <th scope="col">Artist</th>
+                        <th scope="col">Number</th>
+                        <th scope="col">Power</th>
+                        <th scope="col">Toughness</th>
+                        <th scope="col">Loyalty</th>
+                        <th scope="col">Layout</th>
+                        <th scope="col">Multiverse ID</th>
+                        <th scope="col">Image</th>
+                        <th scope="col">Printings</th>
+                        <th scope="col">Legalities</th>
+                        <th scope="col">ID</th>
+                    </tr>
+                </thead>
+                <tbody id="rowstart">
 
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+
+        </div>
+
     </div>
 </body>
 

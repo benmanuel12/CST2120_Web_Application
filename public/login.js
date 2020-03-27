@@ -1,6 +1,20 @@
 function loginfunction() {
+    let request = new XMLHttpRequest();
+    request.onload = function() {
+        if (request.status === 200) {
+            let responseData = request.responseText;
+            alert(responseData);
+        } else {
+            alert("Error: " + request.status);
+        }
+    }
+    request.open("POST", "/login");
+    request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
     let username = document.getElementById("username").value;
     let password = document.getElementById("password").value;
+
+    request.send("username=" + username + "&password=" + password);
 }
 
 /*
