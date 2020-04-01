@@ -240,9 +240,26 @@ function POSTlogin(request, response) {
 
 // Add Card functions ---------------------------------
 
-async function checkUserOwnsCard(id, cardname) {
+// the first function findUserID is reused from earlier
+
+async function findCard(cardname) {
     //Build query
-    let sql = "SELECT * FROM ownedcards WHERE ownedBy = '" + id + "' AND ;";
+    let sql = "SELECT * FROM cards WHERE cardname = '" + cardname + "';";
+    console.log(sql);
+    return new Promise((resolve, reject) => {
+        connectionPool.query(sql, (err, result) => {
+            if (err) { //Check for errors
+                reject("Error executing query: " + JSON.stringify(err));
+            } else { //Output results in JSON format - a web service would return this string.
+                resolve(result);
+            }
+        });
+    })
+}
+
+async function checkUserOwnsCard(multiverseID, userID) {
+    //Build query
+    let sql = "SELECT * FROM ownedcards WHERE multiverseID = " + multiverseID + " AND ownedBy = " + userID + ";"
     console.log(sql);
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
@@ -255,107 +272,161 @@ async function checkUserOwnsCard(id, cardname) {
     })
 }
 
+// UPDATE ownedcards SET quantity = result[0].quantity + new_quantity WHERE multiverseID = previously_fetched_multiverseID AND id = userID
+async function updateRecord(userID, multiverseID, givenQuantity, currentQuantity) {
+    //Build query
+    let sql = "UPDATE ownedcards SET quantity = " + (currentQuantity + givenQuantity) + " WHERE multiverseID = " + multiverseID + " AND id = " + userID + ";";
+    console.log(sql);
+    return new Promise((resolve, reject) => {
+        connectionPool.query(sql, (err, result) => {
+            if (err) { //Check for errors
+                reject("Error executing query: " + JSON.stringify(err));
+            } else { //Output results in JSON format - a web service would return this string.
+                resolve(result);
+            }
+        });
+    })
+}
+
+//INSERT INTO cards (headings here) VALUES (values here);
+async function addFromDatabase(card) {
+    let name = card.name;
+    let manaCost = card.manaCost;
+    let cmc = card.cmc;
+    let colors = card.colors;
+    let colorIdentity = card.colorIdentity;
+    let type = card.type;
+    let supertypes = card.supertypes;
+    let types = card.types;
+    let subtypes = card.subtypes;
+    let rarity = card.rarity;
+    let set = card.set;
+    let setname = card.setname;
+    let text = card.text;
+    let flavor = card.flavor;
+    let artist = card.artist;
+    let number = card.number;
+    let power = card.power;
+    let toughness = card.toughness;
+    let loyalty = card.loyalty;
+    let layout = card.layout;
+    let multiverseID = card.multiverseID;
+    let imageUrl = card.imageUrl;
+    let printings = card.printings;
+    let legalities = card.legalities;
+    let id = card.id;
+
+    let dataArray = [name, manaCost, cmc, colors, colorIdentity, type, supertypes, types, subtypes, rarity, set, setname, text, flavor, artist, number, power, toughness, loyalty, layout, multiverseID, imageUrl, printings, legalities, id];
+
+    //Build query
+    let sql = "INSERT INTO cards VALUES(";
+    sql += name;
+    sql += ");";
+    return new Promise((resolve, reject) => {
+        connectionPool.query(sql, (err, result) => {
+            if (err) { //Check for errors
+                reject("Error executing query: " + JSON.stringify(err));
+            } else { //Output results in JSON format - a web service would return this string.
+                resolve(result);
+            }
+        });
+    })
+}
+
+async function addNewOwnedCard(multiverseID, quantity, userID) {
+    //Build query
+    let sql = "INSERT INTO ownedcards (" + multiverseID + ", " + quantity + ", " + ownedBy + ") VALUES (" + new_multiverseID + ", " + given_quantity + ", " + userID + ");";
+    console.log(sql);
+    return new Promise((resolve, reject) => {
+        connectionPool.query(sql, (err, result) => {
+            if (err) { //Check for errors
+                reject("Error executing query: " + JSON.stringify(err));
+            } else { //Output results in JSON format - a web service would return this string.
+                resolve(result);
+            }
+        });
+    })
+}
+
 
 function POSTaddcard(request, response) {
     let givenCardname = request.body.cardname;
     let givenQuantity = request.body.quantity;
 
     // assuming user has account and is logged in and has supplied a valid card name and quantity
-    // SELECT userID FROM users
     findUserID().then(result => {
-            if (result.length == 1) {
-                // someone is logged in
-                let userID = result[0].id;
-                // SELECT * FROM cards WHERE cardname = given_cardname
-                findMultiverseID().then(result => {
+        if (result.length == 1) {
+            // someone is logged in
+            let userID = result[0].id;
+            findCard(givenCardname).then(result => {
+                if (result.length == 1) {
+                    // card requested exists in card table
+                    let targetMultiverseID = result[0].multiverseID;
+                    checkUserOwnsCard(targetMultiverseID, userID).then(result => {
                         if (result.length == 1) {
-                            // card requested exists in card table
-                            // SELECT * FROM ownedcards WHERE multiverseID = previously_fetched_multiverseID AND id = userID
-                            checkUserOwnsCard().then(result => {
-                                    if (result.length == 1) {
-                                        // user owns at least 1 copy of requested card
-                                        // update entry in ownedcards table to reflect that
-                                        // UPDATE ownedcards SET quantity = result[0].quantity + new_quantity WHERE multiverseID = previously_fetched_multiverseID AND id = userID
-                                        updateRecord().then(result => {
-                                            response.send("Collection updated");
-                                            update()
-                                        }).catch(err => {
-                                            console.error(JSON.stringify(err));
-                                        })
+                            // user owns at least 1 copy of requested card
+                            let currentQuantity = result[0].quantity;
+                            updateRecord(userID, targetMultiverseID, givenQuantity, currentQuantity).then(result => {
+                                response.send("Collection updated");
+                                update()
+                            }).catch(err => {
+                                console.error(JSON.stringify(err));
+                            })
+                        } else {
+                            addNewOwnedCard(targetMultiverseID, givenQuantity, userID).then(result => {
+                                response.send("Card added to collection");
 
-                                    }).catch(err => {
-                                    console.error(JSON.stringify(err));
-                                })
-                            }
-                            else {
-                                // card requested does not exits in card table
-                                // perform API call for card details
-                                card.where({ name: given_cardname })
-                                    .then(cards => {
-                                        cardDetails = cards[0];
-                                    })
-
-                                // insert necessary data from API call into card table
-                                //INSERT INTO cards (headings here) VALUES (values here);
-                                addFromDatabase().then(result => {
-                                    // insert new entry into ownedcards table referring to the new card
-                                    //INSERT INTO ownedcards (multiverseID, quantity, ownedBy) VALUES (new_multiverseID, given_quantity, userID);
-                                    addNewOwnedCard().then(result => {
-                                        response.send("Card added to collection");
-
-                                    }).catch(err => {
-                                        console.error(JSON.stringify(err));
-                                    })
-
-                                }).catch(err => {
-                                    console.error(JSON.stringify(err));
-                                })
-
-                            }
-                        }).catch(err => {
+                            }).catch(err => {
+                                console.error(JSON.stringify(err));
+                            })
+                        }
+                    }).catch(err => {
                         console.error(JSON.stringify(err));
                     })
+                } else {
+                    // card requested does not exits in card table
+                    // perform API call for card details
+                    mtg.card.where({ name: given_cardname })
+                        .then(cards => {
+                            cardDetails = cards[0];
+                        })
 
-                }
-                else {
-                    // no one is logged in
-                    response.send("No logged in user");
+                    // insert necessary data from API call into card table
+                    addFromDatabase(cardDetails).then(result => {
+
+                        // insert new entry into ownedcards table referring to the new card
+                        addNewOwnedCard(targetMultiverseID, givenQuantity, userID).then(result => {
+                            response.send("Card added to collection");
+
+                        }).catch(err => {
+                            console.error(JSON.stringify(err));
+                        })
+
+                    }).catch(err => {
+                        console.error(JSON.stringify(err));
+                    })
                 }
 
             }).catch(err => {
-            console.error(JSON.stringify(err));
-        })
+                console.error(JSON.stringify(err));
+            })
 
+        } else {
+            // no one is logged in
+            response.send("No logged in user");
+        }
 
-    }
+    }).catch(err => {
+        console.error(JSON.stringify(err));
+    })
+}
 
-    /*
+app.get("/update", GETupdate);
 
+app.post("/signup", POSTsignup)
 
-    if (result.length == 1)
-        
-        if (result.length == 1) // they have the card
-    	    
-    	    
-    else
-    	card.where({name: given_cardname})
-    	.then(cards => {
-        cardDetails = cards[0];
-    	})
-        
-        INSERT INTO cards (headings here) VALUES (values here);
+app.post("/login", POSTlogin)
 
-    INSERT INTO ownedcards (multiverseID, quantity, ownedBy) VALUES (new_multiverseID, given_quantity, userID);
-    	
-    then call update() from update.js as function responses
-    */
+app.post("/addcard", POSTaddcard);
 
-    app.get("/update", GETupdate);
-
-    app.post("/signup", POSTsignup)
-
-    app.post("/login", POSTlogin)
-
-    app.post("/addcard", POSTaddcard);
-
-    app.listen(8080);
+app.listen(8080);
