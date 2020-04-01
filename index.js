@@ -316,11 +316,34 @@ async function addFromDatabase(card) {
     let legalities = card.legalities;
     let id = card.id;
 
-    let dataArray = [name, manaCost, cmc, colors, colorIdentity, type, supertypes, types, subtypes, rarity, set, setname, text, flavor, artist, number, power, toughness, loyalty, layout, multiverseID, imageUrl, printings, legalities, id];
-
     //Build query
     let sql = "INSERT INTO cards VALUES(";
-    sql += name;
+    sql = sql + name + ", ";
+    sql = sql + manaCost + ", ";
+    sql = sql + cmc + ", ";
+    sql = sql + escapeQuotes(colors) + ", ";
+    sql = sql + escapeQuotes(colorIdentity) + ", ";
+    sql = sql + type + ", ";
+    sql = sql + escapeQuotes(supertypes) + ", ";
+    sql = sql + escapeQuotes(types) + ", ";
+    sql = sql + escapeQuotes(subtypes) + ", ";
+    sql = sql + rarity + ", ";
+    sql = sql + set + ", ";
+    sql = sql + setname + ", ";
+    sql = sql + text + ", ";
+    sql = sql + flavor + ", ";
+    sql = sql + artist + ", ";
+    sql = sql + number + ", ";
+    sql = sql + power + ", ";
+    sql = sql + toughness + ", ";
+    sql = sql + loyalty + ", ";
+    sql = sql + layout + ", ";
+    sql = sql + multiverseID + ", ";
+    sql = sql + imageUrl + ", ";
+    sql = sql + escapeQuotes(printings) + ", ";
+    sql = sql + escapeQuotes(legalities) + ", ";
+    sql = sql + id;
+
     sql += ");";
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
@@ -420,6 +443,19 @@ function POSTaddcard(request, response) {
         console.error(JSON.stringify(err));
     })
 }
+
+function escapeQuotes(stringText) {
+    let newString = "";
+    for (let i = 0; i < stringText.length; i++) {
+        if (stringText.charAt(i) == "'") {
+            newString += "\'"
+        } else {
+            newString += stringText.charAt(i);
+        }
+    }
+    return newString;
+}
+
 
 app.get("/update", GETupdate);
 
