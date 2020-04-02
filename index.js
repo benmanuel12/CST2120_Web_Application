@@ -244,8 +244,8 @@ function POSTlogin(request, response) {
 
 async function findCard(cardname) {
     //Build query
-    let sql = "SELECT * FROM cards WHERE cardname = '" + cardname + "';";
-    console.log(sql);
+    let sql = "SELECT * FROM cards WHERE name = '" + cardname + "';";
+    console.log("findCard SQL: " + sql);
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
             if (err) { //Check for errors
@@ -260,7 +260,7 @@ async function findCard(cardname) {
 async function checkUserOwnsCard(multiverseID, userID) {
     //Build query
     let sql = "SELECT * FROM ownedcards WHERE multiverseID = " + multiverseID + " AND ownedBy = " + userID + ";"
-    console.log(sql);
+    console.log("checkUserOwnsCard SQL: " + sql);
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
             if (err) {
@@ -274,9 +274,11 @@ async function checkUserOwnsCard(multiverseID, userID) {
 
 // UPDATE ownedcards SET quantity = result[0].quantity + new_quantity WHERE multiverseID = previously_fetched_multiverseID AND id = userID
 async function updateRecord(userID, multiverseID, givenQuantity, currentQuantity) {
+
+    new_quantity = parseInt(currentQuantity) + parseInt(givenQuantity);
     //Build query
-    let sql = "UPDATE ownedcards SET quantity = " + (currentQuantity + givenQuantity) + " WHERE multiverseID = " + multiverseID + " AND id = " + userID + ";";
-    console.log(sql);
+    let sql = "UPDATE ownedcards SET quantity = " + new_quantity + " WHERE multiverseID = " + multiverseID + " AND id = " + userID + ";";
+    console.log("updateRecord SQL: " + sql);
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
             if (err) { //Check for errors
@@ -289,7 +291,7 @@ async function updateRecord(userID, multiverseID, givenQuantity, currentQuantity
 }
 
 //INSERT INTO cards (headings here) VALUES (values here);
-async function addFromDatabase(card) {
+async function addFromAPI(card) {
     let name = card.name;
     let manaCost = card.manaCost;
     let cmc = card.cmc;
@@ -345,6 +347,7 @@ async function addFromDatabase(card) {
     sql = sql + id;
 
     sql += ");";
+    console.log("addFromAPI SQL: " + sql);
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
             if (err) { //Check for errors
@@ -357,11 +360,13 @@ async function addFromDatabase(card) {
 }
 
 async function addNewOwnedCard(multiverseID, quantity, userID) {
+    console.log("running addNewOwnedCard");
     //Build query
-    let sql = "INSERT INTO ownedcards (" + multiverseID + ", " + quantity + ", " + ownedBy + ") VALUES (" + new_multiverseID + ", " + given_quantity + ", " + userID + ");";
-    console.log(sql);
+    let banana = "INSERT INTO ownedcards (multiverseID, quantity, ownedBy) VALUES (" + multiverseID + ", " + quantity + ", " + userID + ");";
+    console.log("Hi dad");
+    console.log("addNewOwnedCard SQL: " + banana);
     return new Promise((resolve, reject) => {
-        connectionPool.query(sql, (err, result) => {
+        connectionPool.query(banana, (err, result) => {
             if (err) { //Check for errors
                 reject("Error executing query: " + JSON.stringify(err));
             } else { //Output results in JSON format - a web service would return this string.
@@ -386,40 +391,109 @@ function POSTaddcard(request, response) {
                     // card requested exists in card table
                     let targetMultiverseID = result[0].multiverseID;
                     checkUserOwnsCard(targetMultiverseID, userID).then(result => {
+                        console.log(result.length);
                         if (result.length == 1) {
                             // user owns at least 1 copy of requested card
+                            console.log("user owns at least 1 copy of requested card");
                             let currentQuantity = result[0].quantity;
                             updateRecord(userID, targetMultiverseID, givenQuantity, currentQuantity).then(result => {
-                                response.send("Collection updated");
-                                update()
+                                console.log("Collection updated");
+                                findCardIDs(userID).then(result => {
+                                    //console.log("FindCardsID: " + JSON.stringify(result));
+                                    let cardIDsAsObject = result;
+                                    let cardIDs = [];
+                                    for (let i = 0; i < cardIDsAsObject.length; i++) {
+                                        cardIDs.push(cardIDsAsObject[i].multiverseID);
+                                    }
+                                    //console.log("Final ID Array: " + cardIDs.toString());
+
+                                    getCardData(cardIDs).then(result => {
+                                        //console.log("getCardData: " + JSON.stringify(result));
+                                        response.send(result);
+
+                                    }).catch(err => {
+                                        console.error(JSON.stringify(err));
+                                    })
+
+                                }).catch(err => {
+                                    console.error(JSON.stringify(err));
+                                })
                             }).catch(err => {
                                 console.error(JSON.stringify(err));
                             })
                         } else {
+                            console.log("user does not own card yet!!");
                             addNewOwnedCard(targetMultiverseID, givenQuantity, userID).then(result => {
-                                response.send("Card added to collection");
+                                console.log("Card added to collection!!");
+                                findCardIDs(userID).then(result => {
+                                    //console.log("FindCardsID: " + JSON.stringify(result));
+                                    let cardIDsAsObject = result;
+                                    let cardIDs = [];
+                                    for (let i = 0; i < cardIDsAsObject.length; i++) {
+                                        cardIDs.push(cardIDsAsObject[i].multiverseID);
+                                    }
+                                    //console.log("Final ID Array: " + cardIDs.toString());
+
+                                    getCardData(cardIDs).then(result => {
+                                        //console.log("getCardData: " + JSON.stringify(result));
+                                        response.send(result);
+
+                                    }).catch(err => {
+                                        console.error(JSON.stringify(err));
+                                    })
+
+                                }).catch(err => {
+                                    console.error(JSON.stringify(err));
+                                })
 
                             }).catch(err => {
                                 console.error(JSON.stringify(err));
+                                console.log("this is executing !!");
                             })
                         }
                     }).catch(err => {
                         console.error(JSON.stringify(err));
                     })
                 } else {
+                    console.log("card does not exist");
                     // card requested does not exits in card table
                     // perform API call for card details
                     mtg.card.where({ name: given_cardname })
                         .then(cards => {
                             cardDetails = cards[0];
+                            console.log(here);
                         })
 
+                    console.log(cardDetails.name);
+
                     // insert necessary data from API call into card table
-                    addFromDatabase(cardDetails).then(result => {
+                    console.log("Adding from API");
+                    addFromAPI(cardDetails).then(result => {
 
                         // insert new entry into ownedcards table referring to the new card
+                        console.log("Adding new owned card");
                         addNewOwnedCard(targetMultiverseID, givenQuantity, userID).then(result => {
-                            response.send("Card added to collection");
+                            console.log("Card added to collection");
+                            findCardIDs(userID).then(result => {
+                                //console.log("FindCardsID: " + JSON.stringify(result));
+                                let cardIDsAsObject = result;
+                                let cardIDs = [];
+                                for (let i = 0; i < cardIDsAsObject.length; i++) {
+                                    cardIDs.push(cardIDsAsObject[i].multiverseID);
+                                }
+                                //console.log("Final ID Array: " + cardIDs.toString());
+
+                                getCardData(cardIDs).then(result => {
+                                    //console.log("getCardData: " + JSON.stringify(result));
+                                    response.send(result);
+
+                                }).catch(err => {
+                                    console.error(JSON.stringify(err));
+                                })
+
+                            }).catch(err => {
+                                console.error(JSON.stringify(err));
+                            })
 
                         }).catch(err => {
                             console.error(JSON.stringify(err));
