@@ -458,34 +458,37 @@ function POSTaddcard(request, response) {
                     console.log("card does not exist");
                     // card requested does not exits in card table
                     // perform API call for card details
-                    mtg.card.where({ name: given_cardname })
+                    mtg.card.where({ name: givenCardname })
                         .then(cards => {
                             cardDetails = cards[0];
-                            console.log(here);
-                        })
 
-                    console.log(cardDetails.name);
+                            // insert necessary data from API call into card table
+                            console.log("Adding from API");
+                            addFromAPI(cardDetails).then(result => {
+                                // insert new entry into ownedcards table referring to the new card
+                                console.log("Adding new owned card");
+                                addNewOwnedCard(targetMultiverseID, givenQuantity, userID).then(result => {
+                                    console.log("Card added to collection");
+                                    findCardIDs(userID).then(result => {
+                                        //console.log("FindCardsID: " + JSON.stringify(result));
+                                        let cardIDsAsObject = result;
+                                        let cardIDs = [];
+                                        for (let i = 0; i < cardIDsAsObject.length; i++) {
+                                            cardIDs.push(cardIDsAsObject[i].multiverseID);
+                                        }
+                                        //console.log("Final ID Array: " + cardIDs.toString());
 
-                    // insert necessary data from API call into card table
-                    console.log("Adding from API");
-                    addFromAPI(cardDetails).then(result => {
+                                        getCardData(cardIDs).then(result => {
+                                            //console.log("getCardData: " + JSON.stringify(result));
+                                            response.send(result);
 
-                        // insert new entry into ownedcards table referring to the new card
-                        console.log("Adding new owned card");
-                        addNewOwnedCard(targetMultiverseID, givenQuantity, userID).then(result => {
-                            console.log("Card added to collection");
-                            findCardIDs(userID).then(result => {
-                                //console.log("FindCardsID: " + JSON.stringify(result));
-                                let cardIDsAsObject = result;
-                                let cardIDs = [];
-                                for (let i = 0; i < cardIDsAsObject.length; i++) {
-                                    cardIDs.push(cardIDsAsObject[i].multiverseID);
-                                }
-                                //console.log("Final ID Array: " + cardIDs.toString());
+                                        }).catch(err => {
+                                            console.error(JSON.stringify(err));
+                                        })
 
-                                getCardData(cardIDs).then(result => {
-                                    //console.log("getCardData: " + JSON.stringify(result));
-                                    response.send(result);
+                                    }).catch(err => {
+                                        console.error(JSON.stringify(err));
+                                    })
 
                                 }).catch(err => {
                                     console.error(JSON.stringify(err));
@@ -493,17 +496,13 @@ function POSTaddcard(request, response) {
 
                             }).catch(err => {
                                 console.error(JSON.stringify(err));
-                            })
 
+                            })
                         }).catch(err => {
                             console.error(JSON.stringify(err));
+                            console.log("error");
                         })
-
-                    }).catch(err => {
-                        console.error(JSON.stringify(err));
-                    })
                 }
-
             }).catch(err => {
                 console.error(JSON.stringify(err));
             })
