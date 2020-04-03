@@ -292,62 +292,38 @@ async function updateRecord(userID, multiverseID, givenQuantity, currentQuantity
 
 //INSERT INTO cards (headings here) VALUES (values here);
 async function addFromAPI(card) {
-    let name = card.name;
-    let manaCost = card.manaCost;
-    let cmc = card.cmc;
-    let colors = card.colors;
-    let colorIdentity = card.colorIdentity;
-    let type = card.type;
-    let supertypes = card.supertypes;
-    let types = card.types;
-    let subtypes = card.subtypes;
-    let rarity = card.rarity;
-    let set = card.set;
-    let setname = card.setname;
-    let text = card.text;
-    let flavor = card.flavor;
-    let artist = card.artist;
-    let number = card.number;
-    let power = card.power;
-    let toughness = card.toughness;
-    let loyalty = card.loyalty;
-    let layout = card.layout;
-    let multiverseID = card.multiverseID;
-    let imageUrl = card.imageUrl;
-    let printings = card.printings;
-    let legalities = card.legalities;
-    let id = card.id;
-
+    console.log("inside addFromAPI");
     //Build query
     let sql = "INSERT INTO cards VALUES(";
-    sql = sql + name + ", ";
-    sql = sql + manaCost + ", ";
-    sql = sql + cmc + ", ";
-    sql = sql + escapeQuotes(colors) + ", ";
-    sql = sql + escapeQuotes(colorIdentity) + ", ";
-    sql = sql + type + ", ";
-    sql = sql + escapeQuotes(supertypes) + ", ";
-    sql = sql + escapeQuotes(types) + ", ";
-    sql = sql + escapeQuotes(subtypes) + ", ";
-    sql = sql + rarity + ", ";
-    sql = sql + set + ", ";
-    sql = sql + setname + ", ";
-    sql = sql + text + ", ";
-    sql = sql + flavor + ", ";
-    sql = sql + artist + ", ";
-    sql = sql + number + ", ";
-    sql = sql + power + ", ";
-    sql = sql + toughness + ", ";
-    sql = sql + loyalty + ", ";
-    sql = sql + layout + ", ";
-    sql = sql + multiverseID + ", ";
-    sql = sql + imageUrl + ", ";
-    sql = sql + escapeQuotes(printings) + ", ";
-    sql = sql + escapeQuotes(legalities) + ", ";
-    sql = sql + id;
+    sql = sql + "'" + card.name + "', '";
+    sql = sql + card.manaCost + "', ";
+    sql = sql + card.cmc + ", '";
+    sql = sql + escapeQuotes(card.colors.toString()) + "', '";
+    sql = sql + escapeQuotes(card.colorIdentity.toString()) + "', '";
+    sql = sql + card.type + "', '";
+    sql = sql + escapeQuotes(card.supertypes.toString()) + "', '";
+    sql = sql + escapeQuotes(card.types.toString()) + "', '";
+    sql = sql + escapeQuotes(card.subtypes.toString()) + "', '";
+    sql = sql + card.rarity + "', '";
+    sql = sql + card.set + "', '";
+    sql = sql + card.setname + "', '";
+    sql = sql + escapeQuotes(card.text.toString()) + "', '";
+    sql = sql + escapeQuotes(card.flavor.toString()) + "', '";
+    sql = sql + card.artist + "', '";
+    sql = sql + card.number + "', '";
+    sql = sql + card.power + "', '";
+    sql = sql + card.toughness + "', '";
+    sql = sql + card.loyalty + "', '";
+    sql = sql + card.layout + "', ";
+    sql = sql + parseInt(card.multiverseID) + ", '";
+    sql = sql + card.imageUrl + "', '";
+    sql = sql + escapeQuotes(card.printings.toString()) + "', '";
+    sql = sql + escapeQuotes(card.legalities.toString()) + "', '";
+    sql = sql + card.id;
 
-    sql += ");";
+    sql += "');";
     console.log("addFromAPI SQL: " + sql);
+
     return new Promise((resolve, reject) => {
         connectionPool.query(sql, (err, result) => {
             if (err) { //Check for errors
@@ -358,6 +334,7 @@ async function addFromAPI(card) {
         });
     })
 }
+
 
 async function addNewOwnedCard(multiverseID, quantity, userID) {
     console.log("running addNewOwnedCard");
@@ -458,7 +435,7 @@ function POSTaddcard(request, response) {
                     console.log("card does not exist");
                     // card requested does not exits in card table
                     // perform API call for card details
-                    mtg.card.where({ name: givenCardname })
+                    mtg.card.where({ name: requoting(givenCardname) })
                         .then(cards => {
                             cardDetails = cards[0];
 
@@ -496,11 +473,11 @@ function POSTaddcard(request, response) {
 
                             }).catch(err => {
                                 console.error(JSON.stringify(err));
-
+                                console.log("error");
                             })
                         }).catch(err => {
                             console.error(JSON.stringify(err));
-                            console.log("error");
+
                         })
                 }
             }).catch(err => {
@@ -529,6 +506,30 @@ function escapeQuotes(stringText) {
     return newString;
 }
 
+function requoting(theString) {
+    newString = '""';
+    for (let i = 0; i < theString.length; i++) {
+        newString = newString.substring(0, newString.length - 1) + theString.charAt(i) + newString.substring(newString.length - 1, newString.length)
+    }
+    return newString;
+}
+
+
+// Logout
+
+async function logout() {
+    //Build query
+    let sql = "UPDATE users SET active = 'No';";
+    return new Promise((resolve, reject) => {
+        connectionPool.query(sql, (err, result) => {
+            if (err) { //Check for errors
+                reject("Error executing query: " + JSON.stringify(err));
+            } else { //Output results in JSON format - a web service would return this string.
+                resolve(result);
+            }
+        });
+    })
+}
 
 app.get("/update", GETupdate);
 
@@ -537,5 +538,7 @@ app.post("/signup", POSTsignup)
 app.post("/login", POSTlogin)
 
 app.post("/addcard", POSTaddcard);
+
+app.get("/logout", logout);
 
 app.listen(8080);

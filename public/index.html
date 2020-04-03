@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -5,13 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css" />
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" />
-    <script type="text/javascript" src='update.js'>
+    <script src='update.js'>
     </script>
-    <script type="text/javascript" src='signup.js'>
+    <script src='signup.js'>
     </script>
-    <script type="text/javascript" src='login.js'>
+    <script src='login.js'>
     </script>
-    <script type="text/javascript" src='addcard.js'>
+    <script src='addcard.js'>
+    </script>
+    <script src='logout.js'>
     </script>
     <title>Index</title>
 </head>
@@ -69,20 +72,9 @@
             </form>
         </div>
     </div>
-    <!--
-    <div id="searchbar">
+    <div id="logoutdiv">
         <form>
-            <div class="form-group">
-                <label for="searchinput">Search Term</label>
-                <input type="text" class="form-control" id="searchinput" placeholder="Ancestral Recall" name="searchinput">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
--->
-    <div id="updatediv">
-        <form>
-            <button type="button" class="btn btn-primary" onclick="update()">Update</button>
+            <button type="button" class="btn btn-primary" onclick="logout()">Log out</button>
         </form>
     </div>
     <div id="resultdiv">
